@@ -1,24 +1,27 @@
 # -*- coding: utf-8 -*-
 import json
-import logging
 import os
 import time
 
-from scrapy.crawler import CrawlerProcess
-from scrapy.utils.project import get_project_settings
-
-from paginiaurii.paginiaurii.spiders.paginiaurii_spider import PaginiauriiSpiderSpider
 from export import export
 
 
-def get_config():
+def create_config(search_query, search_location, output_file_format):
     with open('config.json', 'r') as f:
         config = json.load(f)
+
+    config.update(
+        {
+            'search_query': search_query,
+            'search_location': search_location,
+            'output_file_format': output_file_format
+        }
+    )
     return config
 
 
 def generate_filename():
-    timestamp = int(time.time())
+    timestamp = str(int(time.time()))
     return timestamp
 
 
@@ -56,34 +59,8 @@ def set_default_setting(settings, config):
 def export_to_excel(settings):
     filename_raw = settings['FEED_URI']
     filename = filename_raw[0:filename_raw.index('.')]
-    export(filename_raw, f'{filename}.xlsx')
+
+    excel_filename = f'{filename}.xlsx'
+    export(filename_raw, excel_filename)
     os.remove(filename_raw)
-
-
-def run():
-    logging.error('Getting config settings')
-    config = get_config()
-
-    logging.error('Setting up crawler')
-    settings = get_project_settings()
-    settings = set_default_setting(settings, config)
-
-    process = CrawlerProcess(settings)
-
-    process.crawl(
-        PaginiauriiSpiderSpider,
-        search_query=config['search_query'],
-        search_location=config['search_location']
-    )
-    logging.error('Starting crawler')
-    process.start()
-
-    if config['output_file_format'] in ['excel', 'xlsx']:
-        logging.error('Exporting into excel')
-        export_to_excel(settings)
-
-    logging.error('Successfully finished.')
-
-
-if __name__ == '__main__':
-    run()
+    return excel_filename

@@ -1,5 +1,5 @@
 {
-  "search_query":"cabinet avocatura",
-  "search_location": "cluj-napoca",
-  "output_file_format": "excel"
+  "sender_email": "paginiaurii.spider@gmail.com",
+  "sender_password": "bdns6GDZcbQKhx5V",
+  "receiver_email": "onsha.bogdan@gmail.com"
 }
